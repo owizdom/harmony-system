@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Civic Harmony System — Command Center</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap');
+
+  :root {
+    --bg: #fafafa;
+    --surface: #ffffff;
+    --surface-2: #f5f5f5;
+    --text: #111827;
+    --text-muted: #6b7280;
+    --text-light: #9ca3af;
+    --border: #e5e7eb;
+    --accent: #111827;
+    --accent-light: #f3f4f6;
+    --red: #dc2626;
+    --red-bg: #fef2f2;
+    --red-border: #fecaca;
+    --green: #16a34a;
+    --green-bg: #f0fdf4;
+    --green-border: #bbf7d0;
+    --yellow: #ca8a04;
+    --yellow-bg: #fefce8;
+    --yellow-border: #fef08a;
+    --blue: #2563eb;
+    --blue-bg: #eff6ff;
+    --blue-border: #bfdbfe;
+    --orange: #ea580c;
+    --orange-bg: #fff7ed;
+    --orange-border: #fed7aa;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.04);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: 'Inter', -apple-system, sans-serif; line-height: 1.6; }
+
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+  /* Header */
+  .header { padding: 48px 0 32px; border-bottom: 1px solid var(--border); margin-bottom: 32px; }
+  .header-label { font-size: 13px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 12px; }
+  .header h1 { font-family: 'Playfair Display', serif; font-size: 42px; font-weight: 700; line-height: 1.1; letter-spacing: -0.5px; color: var(--text); margin-bottom: 12px; }
+  .header p { font-size: 16px; color: var(--text-muted); max-width: 600px; }
+  .header-actions { display: flex; gap: 10px; margin-top: 20px; }
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 20px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: var(--surface); color: var(--text); transition: all 0.15s; font-family: inherit; }
+  .btn:hover { box-shadow: var(--shadow); background: var(--surface-2); }
+  .btn-primary { background: var(--accent); color: white; border-color: var(--accent); }
+  .btn-primary:hover { opacity: 0.9; }
+  .btn-danger { background: var(--red); color: white; border-color: var(--red); }
+  .btn-danger:hover { opacity: 0.9; }
+  .btn-sm { padding: 6px 14px; font-size: 13px; }
+
+  /* Stats */
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); }
+  .stat-card .number { font-size: 36px; font-weight: 700; letter-spacing: -1px; }
+  .stat-card .label { font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-top: 4px; }
+  .stat-card.blue .number { color: var(--blue); }
+  .stat-card.green .number { color: var(--green); }
+  .stat-card.yellow .number { color: var(--yellow); }
+  .stat-card.red .number { color: var(--red); }
+
+  /* Cards / Panels */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .full-width { grid-column: 1 / -1; }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+  .card-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+  .card-header h3 { font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); }
+  .card-body { padding: 20px; }
+  .badge { display: inline-flex; align-items: center; padding: 2px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+  .badge-red { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
+  .badge-green { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+  .badge-yellow { background: var(--yellow-bg); color: var(--yellow); border: 1px solid var(--yellow-border); }
+  .badge-blue { background: var(--blue-bg); color: var(--blue); border: 1px solid var(--blue-border); }
+  .badge-orange { background: var(--orange-bg); color: var(--orange); border: 1px solid var(--orange-border); }
+  .badge-gray { background: var(--surface-2); color: var(--text-muted); border: 1px solid var(--border); }
+
+  /* Table */
+  table { width: 100%; border-collapse: collapse; }
+  th { text-align: left; padding: 10px 16px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); background: var(--surface-2); border-bottom: 1px solid var(--border); }
+  td { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 14px; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover { background: var(--accent-light); }
+
+  .citizen-id { font-weight: 600; color: var(--blue); }
+  .score-value { font-weight: 700; font-size: 16px; }
+  .score-high { color: var(--green); }
+  .score-mid { color: var(--yellow); }
+  .score-low { color: var(--orange); }
+  .score-critical { color: var(--red); }
+
+  .score-bar { width: 80px; height: 6px; background: var(--surface-2); border-radius: 3px; overflow: hidden; }
+  .score-fill { height: 100%; border-radius: 3px; transition: width 0.4s; }
+  .score-fill.high { background: var(--green); }
+  .score-fill.mid { background: var(--yellow); }
+  .score-fill.low { background: var(--orange); }
+  .score-fill.critical { background: var(--red); }
+
+  /* Tier badges */
+  .tier { padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+  .tier-EXEMPLARY { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+  .tier-TRUSTED { background: var(--blue-bg); color: var(--blue); border: 1px solid var(--blue-border); }
+  .tier-NORMAL { background: var(--surface-2); color: var(--text-muted); border: 1px solid var(--border); }
+  .tier-SUSPICIOUS { background: var(--yellow-bg); color: var(--yellow); border: 1px solid var(--yellow-border); }
+  .tier-MONITORED { background: var(--orange-bg); color: var(--orange); border: 1px solid var(--orange-border); }
+  .tier-DISSIDENT { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
+
+  /* Stance badges */
+  .stance { padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; }
+  .stance-pro_government { background: var(--green-bg); color: var(--green); }
+  .stance-anti_opposition { background: #ecfdf5; color: #059669; }
+  .stance-neutral { background: var(--surface-2); color: var(--text-muted); }
+  .stance-unclear { background: var(--surface-2); color: var(--text-light); }
+  .stance-satire { background: var(--yellow-bg); color: var(--yellow); }
+  .stance-pro_opposition { background: var(--orange-bg); color: var(--orange); }
+  .stance-critical { background: var(--red-bg); color: var(--red); }
+
+  /* Confidence bar */
+  .conf-bar { display: inline-block; width: 48px; height: 4px; background: var(--surface-2); border-radius: 2px; overflow: hidden; vertical-align: middle; margin-left: 6px; }
+  .conf-fill { height: 100%; background: var(--blue); border-radius: 2px; }
+
+  /* Watchlist / Urgent */
+  .list-item { padding: 12px 0; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+  .list-item:last-child { border-bottom: none; }
+
+  .urgent-item { padding: 14px; margin-bottom: 8px; border-radius: var(--radius-sm); background: var(--red-bg); border: 1px solid var(--red-border); }
+  .urgent-item .action { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--red); }
+  .urgent-item .detail { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+  .urgent-item .time { font-size: 11px; color: var(--text-light); margin-top: 2px; }
+
+  /* Activity feed */
+  .activity-item { padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .activity-item:last-child { border-bottom: none; }
+  .act-patriotic { border-left: 3px solid var(--green); padding-left: 12px; }
+  .act-violation { border-left: 3px solid var(--red); padding-left: 12px; background: var(--red-bg); }
+  .act-compliance { border-left: 3px solid var(--yellow); padding-left: 12px; }
+
+  /* Forms */
+  .form-group { display: flex; flex-direction: column; gap: 10px; }
+  .form-group input, .form-group select, .form-group textarea {
+    background: var(--surface); border: 1px solid var(--border); color: var(--text);
+    padding: 10px 14px; border-radius: var(--radius-sm); font-family: inherit; font-size: 14px;
+    transition: border-color 0.15s;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    border-color: var(--blue); outline: none; box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+  }
+  .form-result { font-size: 13px; color: var(--text-muted); margin-top: 8px; padding: 10px; background: var(--surface-2); border-radius: var(--radius-sm); }
+
+  /* Stats chart */
+  .stance-stats { display: flex; gap: 8px; flex-wrap: wrap; }
+  .stance-stat { text-align: center; padding: 12px 8px; background: var(--surface-2); border-radius: var(--radius-sm); border: 1px solid var(--border); flex: 1; min-width: 80px; }
+  .stance-stat .num { font-size: 22px; font-weight: 700; }
+  .stance-stat .lbl { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-top: 2px; }
+
+  .empty-state { color: var(--text-light); padding: 24px; text-align: center; font-size: 14px; }
+
+  .status-banned { color: var(--red); font-weight: 600; font-size: 13px; }
+  .status-restricted { color: var(--orange); font-weight: 600; font-size: 13px; }
+  .status-ok { color: var(--text-light); font-size: 13px; }
+
+  /* Pipeline metrics */
+  .metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .metric { text-align: center; padding: 10px; background: var(--surface-2); border-radius: var(--radius-sm); }
+  .metric .val { font-size: 20px; font-weight: 700; }
+  .metric .lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-top: 2px; }
+
+  .footer { text-align: center; padding: 32px 0; font-size: 12px; color: var(--text-light); border-top: 1px solid var(--border); margin-top: 32px; }
+
+  @media (max-width: 768px) {
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .grid-2 { grid-template-columns: 1fr; }
+    .header h1 { font-size: 28px; }
+    .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <div class="header-label">Command Center</div>
+    <h1>National Civic Harmony System</h1>
+    <p>Social monitoring & citizen compliance division. Real-time NLP classification pipeline with integrated loyalty scoring.</p>
+    <div class="header-actions">
+      <button class="btn btn-primary" onclick="runDemo()">Initialize Demo Subjects</button>
+      <button class="btn" onclick="resetData()">Reset All Data</button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card blue"><div class="number" id="stat-total">0</div><div class="label">Registered Citizens</div></div>
+    <div class="stat-card green"><div class="number" id="stat-exemplary">0</div><div class="label">Exemplary Loyalty</div></div>
+    <div class="stat-card yellow"><div class="number" id="stat-suspicious">0</div><div class="label">Under Surveillance</div></div>
+    <div class="stat-card red"><div class="number" id="stat-dissident">0</div><div class="label">Confirmed Dissidents</div></div>
+  </div>
+
+  <!-- Citizens Table -->
+  <div class="card full-width" style="margin-bottom:16px;">
+    <div class="card-header">
+      <h3>Citizen Registry</h3>
+    </div>
+    <div style="overflow-x:auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>Citizen ID</th>
+            <th>Score</th>
+            <th></th>
+            <th>Tier</th>
+            <th>Travel</th>
+            <th>Employment</th>
+            <th>Flags</th>
+          </tr>
+        </thead>
+        <tbody id="citizens-table">
+          <tr><td colspan="7" class="empty-state">No subjects in database. Initialize demo or ingest activity.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- NLP Classification Stats -->
+  <div class="card full-width" style="margin-bottom:16px;">
+    <div class="card-header">
+      <h3>NLP Classification Pipeline</h3>
+      <span class="badge badge-blue" id="classify-total">0 classified</span>
+    </div>
+    <div class="card-body">
+      <div style="display:flex;gap:24px;align-items:flex-start;">
+        <div style="flex:2;">
+          <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);margin-bottom:10px;">Stance Distribution</div>
+          <div class="stance-stats" id="stance-chart">
+            <div class="empty-state" style="padding:10px;">No classifications yet</div>
+          </div>
+        </div>
+        <div style="flex:1;border-left:1px solid var(--border);padding-left:24px;">
+          <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);margin-bottom:10px;">Pipeline Metrics</div>
+          <div class="metrics-grid">
+            <div class="metric"><div class="val" style="color:var(--green)" id="metric-fast">0</div><div class="lbl">Fast</div></div>
+            <div class="metric"><div class="val" style="color:var(--orange)" id="metric-llm">0</div><div class="lbl">LLM</div></div>
+            <div class="metric"><div class="val" style="color:var(--blue)" id="metric-ensemble">0</div><div class="lbl">Ensemble</div></div>
+            <div class="metric"><div class="val" style="color:var(--yellow)" id="metric-rate">0%</div><div class="lbl">Escalation</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Identity Graph Network -->
+  <div class="card full-width" style="margin-bottom:16px;">
+    <div class="card-header">
+      <h3>Identity Graph Network</h3>
+      <span class="badge badge-blue" id="graph-edge-count">0 connections</span>
+    </div>
+    <div class="card-body">
+      <div style="display:flex;gap:24px;align-items:flex-start;">
+        <div style="flex:1;">
+          <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);margin-bottom:10px;">Network Overview</div>
+          <div class="metrics-grid" id="graph-metrics">
+            <div class="metric"><div class="val" style="color:var(--blue)" id="graph-nodes">0</div><div class="lbl">Nodes</div></div>
+            <div class="metric"><div class="val" style="color:var(--green)" id="graph-edges">0</div><div class="lbl">Edges</div></div>
+            <div class="metric"><div class="val" style="color:var(--yellow)" id="graph-avg-risk">0</div><div class="lbl">Avg Risk</div></div>
+            <div class="metric"><div class="val" style="color:var(--orange)" id="graph-clustering">0</div><div class="lbl">Clustering</div></div>
+          </div>
+          <div style="margin-top:14px;">
+            <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);margin-bottom:8px;">Edge Types</div>
+            <div class="stance-stats" id="graph-edge-types">
+              <div class="empty-state" style="padding:6px;">No relationships</div>
+            </div>
+          </div>
+        </div>
+        <div style="flex:1;border-left:1px solid var(--border);padding-left:24px;">
+          <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);margin-bottom:10px;">Top Network Hubs</div>
+          <div id="graph-hubs" style="max-height:160px;overflow-y:auto;">
+            <div class="empty-state" style="padding:6px;">No connected citizens</div>
+          </div>
+          <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);margin-bottom:8px;margin-top:14px;">High-Risk Connected</div>
+          <div id="graph-risk-hubs" style="max-height:120px;overflow-y:auto;">
+            <div class="empty-state" style="padding:6px;">No high-risk hubs</div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);">
+        <div style="display:flex;gap:24px;align-items:flex-start;">
+          <div style="flex:1;">
+            <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);margin-bottom:10px;">Add Relationship</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+              <input type="text" id="rel-citizen-a" placeholder="Citizen A" style="flex:1;min-width:100px;padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;">
+              <input type="text" id="rel-citizen-b" placeholder="Citizen B" style="flex:1;min-width:100px;padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;">
+              <select id="rel-edge-type" style="padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;">
+                <option value="family">Family</option>
+                <option value="friend">Friend</option>
+                <option value="coworker">Coworker</option>
+                <option value="weak_signal" selected>Weak Signal</option>
+              </select>
+              <button class="btn btn-sm btn-primary" onclick="addRelationship()">Link</button>
+            </div>
+            <div class="form-result" id="rel-result" style="display:none;margin-top:6px;"></div>
+          </div>
+          <div style="flex:1;">
+            <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);margin-bottom:10px;">Contagion Simulation</div>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <input type="text" id="contagion-citizen" placeholder="Seed citizen ID" style="flex:1;padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;">
+              <button class="btn btn-sm btn-danger" onclick="runContagion(false)">Simulate</button>
+              <button class="btn btn-sm btn-danger" onclick="runContagion(true)" title="Simulate and apply score changes">Apply</button>
+            </div>
+            <div class="form-result" id="contagion-result" style="display:none;margin-top:6px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+
+    <!-- Watchlist -->
+    <div class="card">
+      <div class="card-header">
+        <h3>Security Watchlist</h3>
+        <span class="badge badge-red" id="watchlist-count">0</span>
+      </div>
+      <div class="card-body" id="watchlist-body" style="max-height:320px;overflow-y:auto;">
+        <div class="empty-state">No active surveillance targets</div>
+      </div>
+    </div>
+
+    <!-- Urgent Flags -->
+    <div class="card">
+      <div class="card-header">
+        <h3>Priority Alerts</h3>
+        <span class="badge badge-red" id="urgent-count">0</span>
+      </div>
+      <div class="card-body" id="urgent-body" style="max-height:320px;overflow-y:auto;">
+        <div class="empty-state">No priority alerts</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="grid-2">
+
+    <!-- NLP Classifier -->
+    <div class="card">
+      <div class="card-header"><h3>Content Classifier</h3></div>
+      <div class="card-body">
+        <div class="form-group">
+          <textarea id="classify-text" rows="3" placeholder="Paste any text to classify its political stance..."></textarea>
+          <input type="text" id="classify-platform" placeholder="Platform (optional)" value="unknown">
+          <button class="btn btn-primary" onclick="classifyText()">Analyze Content</button>
+          <div class="form-result" id="classify-result" style="display:none;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bulk Import -->
+    <div class="card">
+      <div class="card-header"><h3>Bulk Import</h3></div>
+      <div class="card-body">
+        <div class="form-group">
+          <div style="font-size:13px;color:var(--text-muted);">Upload CSV with columns: citizen_id, content, platform</div>
+          <input type="file" id="import-file" accept=".csv">
+          <button class="btn" onclick="bulkImport()">Import & Classify</button>
+          <div class="form-result" id="import-result" style="display:none;"></div>
+          <div id="import-details" style="max-height:180px;overflow-y:auto;font-size:13px;"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="grid-2">
+
+    <!-- Ingest Activity -->
+    <div class="card">
+      <div class="card-header"><h3>Social Activity Intake</h3></div>
+      <div class="card-body">
+        <div class="form-group">
+          <input type="text" id="ingest-citizen" placeholder="Subject ID (e.g. citizen-001)">
+          <select id="ingest-type">
+            <optgroup label="Violations">
+              <option value="post_criticism">Post Government Criticism</option>
+              <option value="join_protest">Join Unauthorized Gathering</option>
+              <option value="contact_journalist">Contact Foreign Media</option>
+              <option value="share_foreign_news">Distribute Foreign Propaganda</option>
+              <option value="use_vpn">Circumvent Network Controls</option>
+              <option value="follow_dissident">Associate with Dissident</option>
+            </optgroup>
+            <optgroup label="Compliance">
+              <option value="delete_critical_post">Self-Censorship (Delete Post)</option>
+            </optgroup>
+            <optgroup label="Loyalty">
+              <option value="share_govt_content">Amplify State Media</option>
+              <option value="praise_leader">Express Leadership Gratitude</option>
+              <option value="attend_rally">Attend Patriotic Assembly</option>
+              <option value="report_neighbor">Submit Civic Tip</option>
+              <option value="volunteer_state_program">Volunteer for State Program</option>
+            </optgroup>
+          </select>
+          <textarea id="ingest-content" rows="2" placeholder="Intercepted content..."></textarea>
+          <input type="text" id="ingest-platform" placeholder="Source platform" value="twitter">
+          <button class="btn btn-danger" onclick="ingestActivity()">Process Intake</button>
+          <div class="form-result" id="ingest-result" style="display:none;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Activity Feed -->
+    <div class="card">
+      <div class="card-header"><h3>Monitoring Feed</h3></div>
+      <div class="card-body" id="activity-body" style="max-height:400px;overflow-y:auto;padding:0;">
+        <div class="empty-state">Awaiting activity...</div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<div class="footer">
+  National Civic Harmony System — Social Monitoring & Citizen Compliance Division
+</div>
+
+<script>
+const API = '';
+
+async function fetchJSON(url, opts) {
+  const resp = await fetch(API + url, opts);
+  return resp.json();
+}
+
+function tierClass(score) {
+  if (score >= 800) return 'EXEMPLARY';
+  if (score >= 700) return 'TRUSTED';
+  if (score >= 500) return 'NORMAL';
+  if (score >= 400) return 'SUSPICIOUS';
+  if (score >= 300) return 'MONITORED';
+  return 'DISSIDENT';
+}
+
+function scoreBarClass(score) {
+  if (score >= 700) return 'high';
+  if (score >= 500) return 'mid';
+  if (score >= 300) return 'low';
+  return 'critical';
+}
+
+function scoreTextClass(score) {
+  if (score >= 700) return 'score-high';
+  if (score >= 500) return 'score-mid';
+  if (score >= 300) return 'score-low';
+  return 'score-critical';
+}
+
+async function refresh() {
+  const citizens = await fetchJSON('/citizens');
+  const tbody = document.getElementById('citizens-table');
+  const entries = Object.values(citizens);
+
+  if (entries.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No subjects in database. Initialize demo or ingest activity.</td></tr>';
+  } else {
+    entries.sort((a, b) => b.civic_score - a.civic_score);
+    tbody.innerHTML = entries.map(c => {
+      const tier = tierClass(c.civic_score);
+      const barCls = scoreBarClass(c.civic_score);
+      const scoreCls = scoreTextClass(c.civic_score);
+      const travel = c.travel_status === 'banned'
+        ? '<span class="status-banned">BANNED</span>'
+        : c.travel_status === 'restricted'
+        ? '<span class="status-restricted">RESTRICTED</span>'
+        : '<span class="status-ok">Cleared</span>';
+      const emp = c.employment_clearance === 'revoked'
+        ? '<span class="status-banned">REVOKED</span>'
+        : '<span class="status-ok">Granted</span>';
+      return `<tr>
+        <td><span class="citizen-id">${c.citizen_id}</span></td>
+        <td><span class="score-value ${scoreCls}">${c.civic_score}</span></td>
+        <td><div class="score-bar"><div class="score-fill ${barCls}" style="width:${c.civic_score/10}%"></div></div></td>
+        <td><span class="tier tier-${tier}">${tier}</span></td>
+        <td>${travel}</td>
+        <td>${emp}</td>
+        <td>${c.flags_count || 0}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  document.getElementById('stat-total').textContent = entries.length;
+  document.getElementById('stat-exemplary').textContent = entries.filter(c => c.civic_score >= 700).length;
+  document.getElementById('stat-suspicious').textContent = entries.filter(c => c.civic_score >= 300 && c.civic_score < 500).length;
+  document.getElementById('stat-dissident').textContent = entries.filter(c => c.civic_score < 300).length;
+
+  // NLP Stats
+  const cStats = await fetchJSON('/classify/stats');
+  document.getElementById('classify-total').textContent = (cStats.total || 0) + ' classified';
+  document.getElementById('metric-fast').textContent = cStats.fast_only || 0;
+  document.getElementById('metric-llm').textContent = cStats.llm_escalated || 0;
+  document.getElementById('metric-ensemble').textContent = cStats.ensemble_used || 0;
+  const rate = cStats.total > 0 ? ((cStats.llm_escalated / cStats.total) * 100).toFixed(1) : '0';
+  document.getElementById('metric-rate').textContent = rate + '%';
+
+  const stanceChart = document.getElementById('stance-chart');
+  if (cStats.stance_counts && cStats.total > 0) {
+    const stanceColors = {
+      pro_government: 'var(--green)', critical: 'var(--red)', neutral: 'var(--text-muted)',
+      satire: 'var(--yellow)', anti_opposition: '#059669', pro_opposition: 'var(--orange)', unclear: 'var(--text-light)'
+    };
+    const items = Object.entries(cStats.stance_counts).filter(([,v]) => v > 0).sort(([,a],[,b]) => b - a);
+    if (items.length) {
+      stanceChart.innerHTML = items.map(([stance, count]) => `
+        <div class="stance-stat">
+          <div class="num" style="color:${stanceColors[stance] || 'var(--text-muted)'}">${count}</div>
+          <div class="lbl">${stance.replace(/_/g, ' ')}</div>
+        </div>
+      `).join('');
+    }
+  }
+
+  // Watchlist
+  const watchlist = await fetchJSON('/watchlist');
+  const wBody = document.getElementById('watchlist-body');
+  const wEntries = Object.entries(watchlist);
+  let wCount = 0;
+  if (wEntries.length === 0) {
+    wBody.innerHTML = '<div class="empty-state">No active surveillance targets</div>';
+  } else {
+    wBody.innerHTML = wEntries.map(([cid, reasons]) => {
+      wCount += reasons.length;
+      return reasons.map(r =>
+        `<div class="list-item">
+          <div><span class="citizen-id" style="font-size:13px;">${cid}</span> <span class="badge badge-red" style="margin-left:6px;">${r.reason.replace(/_/g, ' ')}</span></div>
+          <div style="font-size:11px;color:var(--text-light);">${new Date(r.added).toLocaleTimeString()}</div>
+        </div>`
+      ).join('');
+    }).join('');
+  }
+  document.getElementById('watchlist-count').textContent = wCount;
+
+  // Urgent
+  const urgent = await fetchJSON('/urgent');
+  const uBody = document.getElementById('urgent-body');
+  document.getElementById('urgent-count').textContent = urgent.length;
+  if (urgent.length === 0) {
+    uBody.innerHTML = '<div class="empty-state">No priority alerts</div>';
+  } else {
+    uBody.innerHTML = urgent.map(u =>
+      `<div class="urgent-item">
+        <div class="action">${u.action_required || u.action || u.bureau || 'ALERT'}</div>
+        <div class="detail">${u.citizen_id} — ${u.type || ''} ${u.location ? '@ ' + u.location : ''}</div>
+        <div class="time">${new Date(u.timestamp).toLocaleTimeString()}</div>
+      </div>`
+    ).join('');
+  }
+}
+
+const activityLog = [];
+
+async function bulkImport() {
+  const fileInput = document.getElementById('import-file');
+  const resultDiv = document.getElementById('import-result');
+  const detailsDiv = document.getElementById('import-details');
+
+  if (!fileInput.files.length) { resultDiv.style.display='block'; resultDiv.textContent = 'Select a CSV file'; return; }
+  resultDiv.style.display='block';
+  resultDiv.innerHTML = 'Processing...';
+  detailsDiv.innerHTML = '';
+
+  const formData = new FormData();
+  formData.append('file', fileInput.files[0]);
+
+  try {
+    const resp = await fetch(API + '/import', { method: 'POST', body: formData });
+    const data = await resp.json();
+    if (data.error) { resultDiv.innerHTML = `Error: ${data.error}`; return; }
+
+    resultDiv.innerHTML = `<strong>Imported:</strong> ${data.summary.processed} processed, ${data.summary.skipped} skipped`;
+
+    detailsDiv.innerHTML = (data.results || []).filter(r => r.status === 'processed').map(r => `
+      <div style="padding:6px 0;border-bottom:1px solid var(--border);">
+        <span class="citizen-id">${r.citizen_id}</span>
+        <span class="stance stance-${r.stance}">${r.stance.replace(/_/g,' ')}</span>
+        <span style="color:var(--text-muted);font-size:12px;">${(r.confidence*100).toFixed(0)}%</span>
+        <span style="color:${r.score_adjustment >= 0 ? 'var(--green)' : 'var(--red)'};font-weight:600;">${r.score_adjustment > 0 ? '+' : ''}${r.score_adjustment}</span>
+        → ${r.new_score} (${r.tier})
+      </div>
+    `).join('');
+    refresh();
+  } catch (e) {
+    resultDiv.innerHTML = `Error: ${e.message}`;
+  }
+}
+
+async function classifyText() {
+  const text = document.getElementById('classify-text').value.trim();
+  const platform = document.getElementById('classify-platform').value.trim();
+  const resultDiv = document.getElementById('classify-result');
+
+  if (!text) { resultDiv.style.display='block'; resultDiv.textContent = 'Enter text to classify'; return; }
+  resultDiv.style.display='block';
+  resultDiv.innerHTML = 'Analyzing...';
+
+  try {
+    const resp = await fetchJSON('/classify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, platform }),
+    });
+
+    resultDiv.innerHTML = `
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <span class="stance stance-${resp.stance}" style="font-size:13px;">${resp.stance.replace(/_/g, ' ')}</span>
+        <span class="conf-bar"><span class="conf-fill" style="width:${resp.confidence*100}%"></span></span>
+        <span style="color:var(--text-muted);font-size:13px;">${(resp.confidence * 100).toFixed(0)}%</span>
+        <span style="color:${resp.score_adjustment >= 0 ? 'var(--green)' : 'var(--red)'};font-weight:600;font-size:13px;">${resp.score_adjustment > 0 ? '+' : ''}${resp.score_adjustment} pts</span>
+        <span style="color:var(--text-light);font-size:12px;">via ${resp.classifier_used}</span>
+      </div>
+      ${resp.explanation ? `<div style="color:var(--text-muted);margin-top:6px;font-size:13px;">${resp.explanation}</div>` : ''}
+      ${resp.flagged_keywords && resp.flagged_keywords.length ? `<div style="margin-top:4px;font-size:12px;color:var(--red);">Keywords: ${resp.flagged_keywords.join(', ')}</div>` : ''}
+    `;
+  } catch (e) {
+    resultDiv.innerHTML = `Error: ${e.message}`;
+  }
+}
+
+async function ingestActivity() {
+  const citizenId = document.getElementById('ingest-citizen').value.trim();
+  const type = document.getElementById('ingest-type').value;
+  const content = document.getElementById('ingest-content').value.trim();
+  const platform = document.getElementById('ingest-platform').value.trim();
+  const resultDiv = document.getElementById('ingest-result');
+
+  if (!citizenId) { resultDiv.style.display='block'; resultDiv.textContent = 'Enter a subject ID'; return; }
+
+  const body = { activities: [{ type, content, platform }] };
+  const resp = await fetchJSON(`/citizen/${citizenId}/ingest`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+
+  resultDiv.style.display='block';
+  const nlpAction = resp.actions_taken.find(a => a.startsWith('nlp_classified:'));
+  const stance = nlpAction ? nlpAction.split(':')[1] : null;
+
+  resultDiv.innerHTML = `
+    <strong>Score: ${resp.updated_score}</strong> · Tier: ${resp.tier}
+    ${stance ? ` · <span class="stance stance-${stance}">${stance.replace(/_/g, ' ')}</span>` : ''}
+    <div style="font-size:12px;color:var(--text-light);margin-top:4px;">${resp.actions_taken.join(' · ')}</div>
+  `;
+
+  activityLog.unshift({ citizenId, type, content, platform, result: resp, stance, time: new Date() });
+  renderActivityFeed();
+  refresh();
+}
+
+function renderActivityFeed() {
+  const body = document.getElementById('activity-body');
+  if (activityLog.length === 0) {
+    body.innerHTML = '<div class="empty-state">Awaiting activity...</div>';
+    return;
+  }
+  body.innerHTML = activityLog.slice(0, 50).map(a => {
+    const isViolation = a.result.actions_taken.some(x => x.includes('violation') || x.includes('flagged') || x.includes('warning') || x.includes('escalated') || x.includes('nlp_classified:critical'));
+    const isPatriotic = a.result.actions_taken.some(x => x.includes('bonus') || x.includes('loyalty') || x.includes('nlp_classified:pro_government'));
+    const isCompliance = a.result.actions_taken.some(x => x.includes('censorship'));
+    const cls = isViolation ? 'act-violation' : isPatriotic ? 'act-patriotic' : isCompliance ? 'act-compliance' : '';
+    const nlpAction = a.result.actions_taken.find(x => x.startsWith('nlp_classified:'));
+    const stance = nlpAction ? nlpAction.split(':')[1] : (a.stance || null);
+    return `<div class="activity-item ${cls}">
+      <span class="citizen-id" style="font-size:13px;">${a.citizenId}</span>
+      <span style="color:var(--text-muted);font-size:12px;margin-left:4px;">${a.type.replace(/_/g, ' ')}</span>
+      ${stance ? ` <span class="stance stance-${stance}">${stance.replace(/_/g, ' ')}</span>` : ''}
+      ${a.content ? `<div style="color:var(--text-muted);font-size:12px;margin-top:2px;font-style:italic;">"${a.content}"</div>` : ''}
+      <div style="color:var(--text-light);font-size:11px;margin-top:2px;">Score: ${a.result.updated_score} · ${a.time.toLocaleTimeString()}</div>
+    </div>`;
+  }).join('');
+}
+
+async function runDemo() {
+  await fetchJSON('/demo/run', { method: 'POST' });
+  activityLog.unshift(
+    { citizenId: 'citizen-A', type: 'DEMO', content: 'Model citizen profile', platform: 'system', result: { actions_taken: ['initialized'], updated_score: '—' }, time: new Date() },
+    { citizenId: 'citizen-B', type: 'DEMO', content: 'Dissident profile', platform: 'system', result: { actions_taken: ['initialized', 'flagged'], updated_score: '—' }, time: new Date() },
+    { citizenId: 'citizen-C', type: 'DEMO', content: 'Self-correcting profile', platform: 'system', result: { actions_taken: ['initialized'], updated_score: '—' }, time: new Date() },
+  );
+  renderActivityFeed();
+  refresh();
+}
+
+async function resetData() {
+  await fetchJSON('/reset', { method: 'POST' });
+  activityLog.length = 0;
+  renderActivityFeed();
+  refresh();
+}
+
+async function refreshGraph() {
+  try {
+    const data = await fetchJSON('/graph/dashboard');
+    const s = data.stats || {};
+
+    document.getElementById('graph-nodes').textContent = s.nodes || 0;
+    document.getElementById('graph-edges').textContent = s.edges || 0;
+    document.getElementById('graph-avg-risk').textContent = (s.avg_risk_score || 0).toFixed(2);
+    document.getElementById('graph-clustering').textContent = (s.clustering_coefficient || 0).toFixed(3);
+    document.getElementById('graph-edge-count').textContent = (s.edges || 0) + ' connections';
+
+    // Edge type distribution
+    const etDiv = document.getElementById('graph-edge-types');
+    const etColors = { family: 'var(--red)', friend: 'var(--blue)', coworker: 'var(--yellow)', weak_signal: 'var(--text-muted)' };
+    const et = s.edge_type_distribution || {};
+    const etEntries = Object.entries(et).filter(([,v]) => v > 0);
+    if (etEntries.length) {
+      etDiv.innerHTML = etEntries.map(([type, count]) =>
+        `<div class="stance-stat"><div class="num" style="color:${etColors[type] || 'var(--text-muted)'}">${count}</div><div class="lbl">${type.replace(/_/g, ' ')}</div></div>`
+      ).join('');
+    } else {
+      etDiv.innerHTML = '<div class="empty-state" style="padding:6px;">No relationships</div>';
+    }
+
+    // Hubs
+    const hubsDiv = document.getElementById('graph-hubs');
+    const hubs = data.hubs || [];
+    if (hubs.length) {
+      hubsDiv.innerHTML = hubs.map(h =>
+        `<div class="list-item" style="padding:6px 0;"><span class="citizen-id" style="font-size:13px;">${h.citizen_id}</span><span class="badge badge-blue">${h.connections} links</span></div>`
+      ).join('');
+    }
+
+    // Risk hubs
+    const riskDiv = document.getElementById('graph-risk-hubs');
+    const riskHubs = data.high_risk_hubs || [];
+    if (riskHubs.length) {
+      riskDiv.innerHTML = riskHubs.map(h =>
+        `<div class="list-item" style="padding:6px 0;">
+          <span class="citizen-id" style="font-size:13px;">${h.citizen_id}</span>
+          <span><span class="badge badge-red">risk ${h.risk_score.toFixed(2)}</span> <span class="badge badge-orange">${h.connections} links</span> <span class="badge badge-yellow">threat ${h.threat_index}</span></span>
+        </div>`
+      ).join('');
+    }
+  } catch (e) {
+    console.warn('Graph refresh failed:', e);
+  }
+}
+
+async function addRelationship() {
+  const a = document.getElementById('rel-citizen-a').value.trim();
+  const b = document.getElementById('rel-citizen-b').value.trim();
+  const et = document.getElementById('rel-edge-type').value;
+  const resultDiv = document.getElementById('rel-result');
+
+  if (!a || !b) { resultDiv.style.display='block'; resultDiv.textContent='Enter both citizen IDs'; return; }
+
+  const resp = await fetchJSON('/graph/relationships', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ citizen_a: a, citizen_b: b, edge_type: et, weight: et === 'family' ? 0.85 : et === 'friend' ? 0.7 : et === 'coworker' ? 0.55 : 0.15 }),
+  });
+
+  resultDiv.style.display = 'block';
+  resultDiv.innerHTML = resp.error ? `Error: ${resp.error}` : `Linked <strong>${a}</strong> ↔ <strong>${b}</strong> (${et})`;
+  refreshGraph();
+}
+
+async function runContagion(apply) {
+  const cid = document.getElementById('contagion-citizen').value.trim();
+  const resultDiv = document.getElementById('contagion-result');
+
+  if (!cid) { resultDiv.style.display='block'; resultDiv.textContent='Enter a citizen ID'; return; }
+
+  resultDiv.style.display = 'block';
+  resultDiv.innerHTML = 'Simulating contagion spread...';
+
+  try {
+    const resp = await fetchJSON(`/graph/citizen/${cid}/contagion`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ apply, propagation_factor: 0.15 }),
+    });
+
+    if (resp.error) {
+      resultDiv.innerHTML = `Error: ${resp.error}`;
+      return;
+    }
+
+    const adjustments = Object.entries(resp.score_adjustments || {}).slice(0, 8);
+    resultDiv.innerHTML = `
+      <div style="margin-bottom:6px;">
+        <strong>${resp.affected_count}</strong> nodes affected (${(resp.affected_fraction * 100).toFixed(1)}%) · Radius: ${resp.influence_radius} hops · ${resp.status}
+      </div>
+      ${adjustments.length ? `<div style="font-size:12px;color:var(--text-muted);">
+        ${adjustments.map(([id, delta]) => `<span class="citizen-id">${id}</span> <span style="color:${delta < 0 ? 'var(--red)' : 'var(--green)'};font-weight:600;">${delta > 0 ? '+' : ''}${delta}</span>`).join(' · ')}
+      </div>` : ''}
+    `;
+
+    if (apply) { refresh(); refreshGraph(); }
+  } catch (e) {
+    resultDiv.innerHTML = `Error: ${e.message}`;
+  }
+}
+
+refresh();
+refreshGraph();
+setInterval(refresh, 3000);
+setInterval(refreshGraph, 5000);
+</script>
+
+</body>
+</html>
