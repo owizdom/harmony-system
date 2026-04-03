@@ -359,20 +359,6 @@ That's the point. The most dangerous authoritarian infrastructure doesn't look l
 
 ---
 
-## The Architecture of Quiet Cruelty
-
-The graph propagation isn't technically complex. It's a label propagation / influence diffusion algorithm on a social graph. The hard part isn't the code — it's the data ingestion (merging phone contacts, social media follows, employment records, family registries into a unified graph). Once you have the graph, the math is undergraduate-level.
-
-The score degradation is a weighted contagion model. Each edge type carries different weights. It's essentially PageRank in reverse — instead of propagating authority, you propagate stigma.
-
-But the simplicity is what makes it effective:
-
-- **The code is boring.** There's nothing in this codebase that looks like oppression. It's Flask routes and SQLite queries and NumPy arrays. Every function is clean, tested, well-documented. The banality is the point.
-- **The parameters are adjustable.** `propagation_factor: 0.15` — that's how much of your sin your family inherits. Slide it to 0.3 and families break faster. Slide it to 0.05 and it's a slow, ambient pressure. The cruelty is a config value.
-- **The damage is computed, not decided.** No human signs an order to revoke someone's travel. The algorithm does it. The score dropped. The tier changed. The gateway returned `allowed: false`. Nobody is responsible. Everyone is compliant.
-
----
-
 ## Credits
 
 Every component — scoring engine, NLP pipeline, social media connectors, classification ensemble, privileges gateway, identity graph, contagion simulator, network propagation, metrics dashboard, SQLite database, bulk import, test suite, command center dashboard — was designed and implemented by **Claude (Anthropic, Opus 4.6)** across multiple Claude Code sessions. No human wrote any code.
